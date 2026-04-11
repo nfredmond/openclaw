@@ -30,6 +30,24 @@ OpenClaw Onboard guides you step by step through setting up the gateway, workspa
 Works with npm, pnpm, or bun.
 New install? Start here: [Getting started](https://docs.openclaw.ai/start/getting-started)
 
+## ClawModeler Transportation Modeling Edition
+
+This fork adds ClawModeler: an OpenClaw agent workflow for transportation demand
+modeling, accessibility screening, GTFS summaries, project scoring, QA-gated
+reports, and bridge handoffs to SUMO, MATSim, UrbanSim, DTALite, and TBEST.
+
+Start with:
+
+```bash
+openclaw clawmodeler init --workspace ./my-region
+openclaw clawmodeler demo --workspace ./demo-workspace
+openclaw clawmodeler tools --json
+```
+
+See [CLAWMODELER_README.md](CLAWMODELER_README.md) and
+[docs/clawmodeler-stack.md](docs/clawmodeler-stack.md) for the current modeling
+stack, data contract, install profiles, and agent workflow.
+
 ## Sponsors
 
 <table>
