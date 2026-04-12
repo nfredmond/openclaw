@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from .contracts import stamp_contract, validate_contract
+from .contracts import CURRENT_SCHEMA_VERSION, stamp_contract, validate_contract
 from .model import load_socio, load_zones, write_csv
 from .sumo_bridge import load_sumo_network_edges
 from .workspace import InsufficientDataError, load_receipt, read_json, utc_now, write_json
@@ -36,7 +36,7 @@ def prepare_dtalite_bridge(workspace: Path, run_id: str, scenario_id: str = "bas
     write_json(
         settings_path,
         {
-            "schema_version": "1.0.0",
+            "schema_version": CURRENT_SCHEMA_VERSION,
             "scenario_id": scenario_id,
             "assignment_mode": "screening_handoff",
             "files": {
@@ -50,23 +50,23 @@ def prepare_dtalite_bridge(workspace: Path, run_id: str, scenario_id: str = "bas
 
     bridge_manifest = stamp_contract(
         {
-        "bridge": "dtalite",
-        "run_id": run_id,
-        "scenario_id": scenario_id,
-        "created_at": utc_now(),
-        "status": "ready_for_dtalite",
-        "inputs": {
-            "node": str(node_path),
-            "link": str(link_path),
-            "demand": str(demand_path),
-            "settings": str(settings_path),
-        },
-        "demand_row_count": demand_count,
-        "commands": {"run": f"bash {bridge_dir / 'run-dtalite.sh'}"},
-        "notes": [
-            "DTALite bridge package generated from staged zone-level network edges.",
-            "Use detailed network and OD inputs for calibrated dynamic assignment.",
-        ],
+            "bridge": "dtalite",
+            "run_id": run_id,
+            "scenario_id": scenario_id,
+            "created_at": utc_now(),
+            "status": "ready_for_dtalite",
+            "inputs": {
+                "node": str(node_path),
+                "link": str(link_path),
+                "demand": str(demand_path),
+                "settings": str(settings_path),
+            },
+            "demand_row_count": demand_count,
+            "commands": {"run": f"bash {bridge_dir / 'run-dtalite.sh'}"},
+            "notes": [
+                "DTALite bridge package generated from staged zone-level network edges.",
+                "Use detailed network and OD inputs for calibrated dynamic assignment.",
+            ],
         },
         "bridge_manifest",
     )

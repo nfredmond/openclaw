@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+from .contracts import CURRENT_SCHEMA_VERSION
 from .workspace import ensure_workspace, write_json
 
 
@@ -77,7 +78,7 @@ def write_json_once(path: Path, data: dict[str, Any], force: bool) -> list[str]:
 
 def starter_question() -> dict[str, Any]:
     return {
-        "schema_version": "1.0.0",
+        "schema_version": CURRENT_SCHEMA_VERSION,
         "artifact_type": "question",
         "question_type": "accessibility",
         "title": "Baseline accessibility and scenario comparison",

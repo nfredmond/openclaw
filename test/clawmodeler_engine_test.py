@@ -9,7 +9,12 @@ import unittest
 import zipfile
 from pathlib import Path
 
-from clawmodeler_engine.contracts import validate_artifact_file, validate_contract
+from clawmodeler_engine.contracts import (
+    CURRENT_MANIFEST_VERSION,
+    CURRENT_SCHEMA_VERSION,
+    validate_artifact_file,
+    validate_contract,
+)
 from clawmodeler_engine.demo import write_demo_inputs
 from clawmodeler_engine.model import graphml_edge_minutes
 from clawmodeler_engine.toolbox import assess_model_inventory, load_toolbox
@@ -57,7 +62,7 @@ class ClawModelerEngineTest(unittest.TestCase):
 
     def test_toolbox_packaged_fallback_and_model_root_override(self) -> None:
         toolbox = load_toolbox()
-        self.assertEqual(toolbox["schema_version"], "1.0.0")
+        self.assertEqual(toolbox["schema_version"], CURRENT_SCHEMA_VERSION)
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
             (root / "sumo" / "tools").mkdir(parents=True)
@@ -194,7 +199,7 @@ class ClawModelerEngineTest(unittest.TestCase):
             )
 
             manifest = json.loads((workspace / "runs" / "demo" / "manifest.json").read_text())
-            self.assertEqual(manifest["manifest_version"], "1.0.0")
+            self.assertEqual(manifest["manifest_version"], CURRENT_MANIFEST_VERSION)
             self.assertEqual(manifest["engine"]["routing_engine"], "osmnx_networkx")
             self.assertEqual(len(manifest["scenarios"]), 2)
             self.assertGreater(manifest["fact_block_count"], 0)

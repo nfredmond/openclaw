@@ -4,7 +4,7 @@ import zipfile
 from pathlib import Path
 from typing import Any
 
-from .contracts import stamp_contract, validate_contract
+from .contracts import CURRENT_SCHEMA_VERSION, stamp_contract, validate_contract
 from .model import artifact_paths, read_gtfs_csv, write_csv
 from .workspace import InsufficientDataError, InputValidationError, load_receipt, read_json
 from .workspace import utc_now, write_json
@@ -34,7 +34,7 @@ def prepare_tbest_bridge(workspace: Path, run_id: str, scenario_id: str = "basel
     write_json(
         config_path,
         {
-            "schema_version": "1.0.0",
+            "schema_version": CURRENT_SCHEMA_VERSION,
             "scenario_id": scenario_id,
             "source_gtfs": str(gtfs_paths[0]),
             "tables": {
@@ -48,25 +48,25 @@ def prepare_tbest_bridge(workspace: Path, run_id: str, scenario_id: str = "basel
 
     bridge_manifest = stamp_contract(
         {
-        "bridge": "tbest",
-        "run_id": run_id,
-        "scenario_id": scenario_id,
-        "created_at": utc_now(),
-        "status": "ready_for_tbest",
-        "inputs": {
-            "stops": str(stops_path),
-            "routes": str(routes_path),
-            "service": str(service_path),
-            "config": str(config_path),
-        },
-        "stop_count": len(stops),
-        "route_count": len(routes),
-        "service_row_count": len(service_rows),
-        "commands": {"run": f"bash {bridge_dir / 'run-tbest.sh'}"},
-        "notes": [
-            "TBEST bridge package generated from staged GTFS schedule inputs.",
-            "Use observed ridership and stop context data for calibrated TBEST modeling.",
-        ],
+            "bridge": "tbest",
+            "run_id": run_id,
+            "scenario_id": scenario_id,
+            "created_at": utc_now(),
+            "status": "ready_for_tbest",
+            "inputs": {
+                "stops": str(stops_path),
+                "routes": str(routes_path),
+                "service": str(service_path),
+                "config": str(config_path),
+            },
+            "stop_count": len(stops),
+            "route_count": len(routes),
+            "service_row_count": len(service_rows),
+            "commands": {"run": f"bash {bridge_dir / 'run-tbest.sh'}"},
+            "notes": [
+                "TBEST bridge package generated from staged GTFS schedule inputs.",
+                "Use observed ridership and stop context data for calibrated TBEST modeling.",
+            ],
         },
         "bridge_manifest",
     )

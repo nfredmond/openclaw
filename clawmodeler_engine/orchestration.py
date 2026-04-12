@@ -3,7 +3,12 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from .contracts import normalize_question_contract, stamp_contract, validate_contract
+from .contracts import (
+    CURRENT_MANIFEST_VERSION,
+    normalize_question_contract,
+    stamp_contract,
+    validate_contract,
+)
 from .model import run_full_stack
 from .qa import build_qa_report, load_qa_report
 from .report import render_markdown_report
@@ -120,7 +125,7 @@ def write_run(workspace: Path, run_id: str, scenarios: list[str]) -> tuple[Path,
     stack_result = run_full_stack(workspace, run_id, receipt, scenarios, paths)
     manifest = stamp_contract(
         {
-            "manifest_version": "1.0.0",
+            "manifest_version": CURRENT_MANIFEST_VERSION,
             "run_id": run_id,
             "created_at": utc_now(),
             "app": {"name": "ClawModeler", "engine_version": ENGINE_VERSION},

@@ -4,6 +4,8 @@ import json
 import zipfile
 from pathlib import Path
 
+from .contracts import CURRENT_SCHEMA_VERSION
+
 
 def write_demo_inputs(workspace: Path) -> dict[str, Path]:
     source_dir = workspace / "demo-source"
@@ -56,7 +58,7 @@ def write_demo_inputs(workspace: Path) -> dict[str, Path]:
     question.write_text(
         json.dumps(
             {
-                "schema_version": "1.0.0",
+                "schema_version": CURRENT_SCHEMA_VERSION,
                 "artifact_type": "question",
                 "question_type": "accessibility",
                 "proxy_speed_kph": 45,

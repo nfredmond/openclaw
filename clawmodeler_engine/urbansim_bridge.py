@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from .contracts import stamp_contract, validate_contract
+from .contracts import CURRENT_SCHEMA_VERSION, stamp_contract, validate_contract
 from .model import (
     build_scenario_socio_rows,
     load_optional_json,
@@ -44,7 +44,7 @@ def prepare_urbansim_bridge(
     write_json(
         config_path,
         {
-            "schema_version": "1.0.0",
+            "schema_version": CURRENT_SCHEMA_VERSION,
             "scenario_id": scenario_id,
             "tables": {
                 "zones": str(zones_path),
@@ -62,28 +62,28 @@ def prepare_urbansim_bridge(
 
     bridge_manifest = stamp_contract(
         {
-        "bridge": "urbansim",
-        "run_id": run_id,
-        "scenario_id": scenario_id,
-        "created_at": utc_now(),
-        "status": "ready_for_urbansim",
-        "inputs": {
-            "zones": str(zones_path),
-            "households": str(households_path),
-            "jobs": str(jobs_path),
-            "buildings": str(buildings_path),
-            "config": str(config_path),
-        },
-        "household_count": household_count,
-        "job_count": job_count,
-        "building_count": building_count,
-        "commands": {
-            "run": f"bash {bridge_dir / 'run-urbansim.sh'}",
-        },
-        "notes": [
-            "UrbanSim bridge package generated from staged zone-level socio inputs.",
-            "This package is a land-use scenario handoff, not a calibrated forecast.",
-        ],
+            "bridge": "urbansim",
+            "run_id": run_id,
+            "scenario_id": scenario_id,
+            "created_at": utc_now(),
+            "status": "ready_for_urbansim",
+            "inputs": {
+                "zones": str(zones_path),
+                "households": str(households_path),
+                "jobs": str(jobs_path),
+                "buildings": str(buildings_path),
+                "config": str(config_path),
+            },
+            "household_count": household_count,
+            "job_count": job_count,
+            "building_count": building_count,
+            "commands": {
+                "run": f"bash {bridge_dir / 'run-urbansim.sh'}",
+            },
+            "notes": [
+                "UrbanSim bridge package generated from staged zone-level socio inputs.",
+                "This package is a land-use scenario handoff, not a calibrated forecast.",
+            ],
         },
         "bridge_manifest",
     )
