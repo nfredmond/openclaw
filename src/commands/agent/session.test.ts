@@ -8,34 +8,23 @@ const mocks = vi.hoisted(() => ({
   listAgentIds: vi.fn(),
 }));
 
-vi.mock("../../config/sessions.js", async () => {
-  const actual = await vi.importActual<typeof import("../../config/sessions.js")>(
-    "../../config/sessions.js",
+vi.mock("../../config/sessions/main-session.js", async () => {
+  const actual = await vi.importActual<typeof import("../../config/sessions/main-session.js")>(
+    "../../config/sessions/main-session.js",
   );
   return {
     ...actual,
+    resolveExplicitAgentSessionKey: () => undefined,
   };
 });
 
-vi.mock("../../config/sessions/paths.js", async () => {
-  const actual = await vi.importActual<typeof import("../../config/sessions/paths.js")>(
-    "../../config/sessions/paths.js",
-  );
-  return {
-    ...actual,
-    resolveStorePath: mocks.resolveStorePath,
-  };
-});
+vi.mock("../../config/sessions/paths.js", () => ({
+  resolveStorePath: mocks.resolveStorePath,
+}));
 
-vi.mock("../../config/sessions/store-load.js", async () => {
-  const actual = await vi.importActual<typeof import("../../config/sessions/store-load.js")>(
-    "../../config/sessions/store-load.js",
-  );
-  return {
-    ...actual,
-    loadSessionStore: mocks.loadSessionStore,
-  };
-});
+vi.mock("../../config/sessions/store-load.js", () => ({
+  loadSessionStore: mocks.loadSessionStore,
+}));
 
 vi.mock("../../agents/agent-scope.js", () => ({
   listAgentIds: mocks.listAgentIds,

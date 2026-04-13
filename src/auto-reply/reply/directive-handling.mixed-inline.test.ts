@@ -57,7 +57,7 @@ describe("mixed inline directives", () => {
     const fastLane = await applyInlineDirectivesFastLane({
       directives,
       commandAuthorized: true,
-      senderIsOwner: true,
+      senderIsOwner: false,
       ctx: { Surface: "whatsapp" } as never,
       cfg,
       agentId: "main",
@@ -130,7 +130,7 @@ describe("mixed inline directives", () => {
     const fastLane = await applyInlineDirectivesFastLane({
       directives,
       commandAuthorized: true,
-      senderIsOwner: true,
+      senderIsOwner: false,
       ctx: { Surface: "discord" } as never,
       cfg,
       agentId: "main",

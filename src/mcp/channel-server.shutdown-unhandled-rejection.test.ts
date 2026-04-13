@@ -12,7 +12,7 @@ const bridgeState = vi.hoisted(() => ({
   close: vi.fn(async () => {
     throw new Error("close boom");
   }),
-  setServer: vi.fn((_server?: unknown) => {}),
+  setServer: vi.fn(),
   handleClaudePermissionRequest: vi.fn(async (_payload?: unknown) => {}),
 }));
 

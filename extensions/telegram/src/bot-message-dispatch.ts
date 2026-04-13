@@ -811,9 +811,7 @@ export const dispatchTelegramMessage = async ({
           : undefined,
         onToolStart: statusReactionController
           ? async (payload) => {
-              if (payload.name) {
-                await statusReactionController.setTool(payload.name);
-              }
+              await Promise.resolve(statusReactionController.setTool(payload.name ?? "tool"));
             }
           : undefined,
         onCompactionStart: statusReactionController
