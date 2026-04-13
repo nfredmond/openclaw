@@ -7,17 +7,6 @@ const hoisted = vi.hoisted(() => ({
   listAgentIdsMock: vi.fn<() => string[]>(),
 }));
 
-vi.mock("../../config/sessions.js", async () => {
-  const actual = await vi.importActual<typeof import("../../config/sessions.js")>(
-    "../../config/sessions.js",
-  );
-  return {
-    ...actual,
-    resolveAgentIdFromSessionKey: () => "main",
-    resolveExplicitAgentSessionKey: () => undefined,
-  };
-});
-
 vi.mock("../../config/sessions/main-session.js", async () => {
   const actual = await vi.importActual<typeof import("../../config/sessions/main-session.js")>(
     "../../config/sessions/main-session.js",
