@@ -9,6 +9,7 @@ const state = vi.hoisted(() => ({
   clearAgentRunContextMock: vi.fn(),
   updateSessionStoreAfterAgentRunMock: vi.fn(),
   deliverAgentCommandResultMock: vi.fn(),
+  resolveEffectiveModelFallbacksMock: vi.fn().mockReturnValue(undefined),
 }));
 
 vi.mock("./model-fallback.js", () => ({
@@ -107,7 +108,7 @@ vi.mock("../cli/deps.js", () => ({
   createDefaultDeps: () => ({}),
 }));
 
-vi.mock("../config/config.js", () => ({
+vi.mock("../config/io.js", () => ({
   loadConfig: () => ({
     agents: {
       defaults: {
@@ -122,6 +123,9 @@ vi.mock("../config/config.js", () => ({
   readConfigFileSnapshotForWrite: async () => ({
     snapshot: { valid: false },
   }),
+}));
+
+vi.mock("../config/runtime-snapshot.js", () => ({
   setRuntimeConfigSnapshot: vi.fn(),
 }));
 
@@ -198,12 +202,11 @@ vi.mock("../utils/message-channel.js", () => ({
   resolveMessageChannel: () => "test",
 }));
 
-const resolveEffectiveModelFallbacksMock = vi.fn().mockReturnValue(undefined);
 vi.mock("./agent-scope.js", () => ({
   listAgentIds: () => ["default"],
   resolveAgentConfig: () => undefined,
   resolveAgentDir: () => "/tmp/agent",
-  resolveEffectiveModelFallbacks: resolveEffectiveModelFallbacksMock,
+  resolveEffectiveModelFallbacks: state.resolveEffectiveModelFallbacksMock,
   resolveSessionAgentId: () => "default",
   resolveAgentSkillsFilter: () => undefined,
   resolveAgentWorkspaceDir: () => "/tmp/workspace",
@@ -279,6 +282,8 @@ type FallbackRunnerParams = {
   model: string;
   run: (provider: string, model: string) => Promise<unknown>;
 };
+
+const resolveEffectiveModelFallbacksMock = state.resolveEffectiveModelFallbacksMock;
 
 function makeSuccessResult(provider: string, model: string) {
   return {

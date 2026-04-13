@@ -21,6 +21,10 @@ vi.mock("./auth-profiles/order.js", () => ({
   resolveAuthProfileOrder: vi.fn(),
 }));
 
+vi.mock("./auth-profiles/source-check.js", () => ({
+  hasAnyAuthProfileStoreSource: vi.fn(() => true),
+}));
+
 type AuthProfilesStoreModule = typeof import("./auth-profiles/store.js");
 type AuthProfilesUsageModule = typeof import("./auth-profiles/usage.js");
 type AuthProfilesOrderModule = typeof import("./auth-profiles/order.js");
@@ -42,6 +46,9 @@ let mockedResolveProfilesUnavailableReason: ReturnType<
 let mockedResolveAuthProfileOrder: ReturnType<
   typeof vi.mocked<AuthProfilesOrderModule["resolveAuthProfileOrder"]>
 >;
+let mockedLoadAuthProfileStoreForRuntime: ReturnType<
+  typeof vi.mocked<AuthProfilesStoreModule["loadAuthProfileStoreForRuntime"]>
+>;
 let runWithModelFallback: ModelFallbackModule["runWithModelFallback"];
 let _probeThrottleInternals: ModelFallbackModule["_probeThrottleInternals"];
 let registerLogTransport: LoggerModule["registerLogTransport"];
@@ -58,6 +65,9 @@ async function loadModelFallbackProbeModules() {
   const loggerModule = await import("../logging/logger.js");
   const modelFallbackModule = await import("./model-fallback.js");
   mockedEnsureAuthProfileStore = vi.mocked(authProfilesStoreModule.ensureAuthProfileStore);
+  mockedLoadAuthProfileStoreForRuntime = vi.mocked(
+    authProfilesStoreModule.loadAuthProfileStoreForRuntime,
+  );
   mockedGetSoonestCooldownExpiry = vi.mocked(authProfilesUsageModule.getSoonestCooldownExpiry);
   mockedIsProfileInCooldown = vi.mocked(authProfilesUsageModule.isProfileInCooldown);
   mockedResolveProfilesUnavailableReason = vi.mocked(
@@ -184,6 +194,7 @@ describe("runWithModelFallback – probe logic", () => {
       profiles: {},
     };
     mockedEnsureAuthProfileStore.mockReturnValue(fakeStore);
+    mockedLoadAuthProfileStoreForRuntime.mockReturnValue(fakeStore);
 
     // Default: resolveAuthProfileOrder returns profiles only for "openai" provider
     mockedResolveAuthProfileOrder.mockImplementation(({ provider }: { provider: string }) => {

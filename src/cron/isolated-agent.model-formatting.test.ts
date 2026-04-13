@@ -1,6 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const {
+  DEFAULT_MODEL,
+  DEFAULT_PROVIDER,
   loadModelCatalogMock,
   getModelRefStatusMock,
   normalizeProviderIdMock,
@@ -9,6 +11,8 @@ const {
   resolveConfiguredModelRefMock,
   resolveHooksGmailModelMock,
 } = vi.hoisted(() => ({
+  DEFAULT_MODEL: "claude-opus-4-6",
+  DEFAULT_PROVIDER: "anthropic",
   loadModelCatalogMock: vi.fn(),
   getModelRefStatusMock: vi.fn(),
   normalizeProviderIdMock: vi.fn((value: unknown) =>
@@ -33,11 +37,10 @@ const {
   resolveHooksGmailModelMock: vi.fn(),
 }));
 
-vi.mock("../agents/model-catalog.js", () => ({
+vi.mock("./isolated-agent/run-model-selection.runtime.js", () => ({
+  DEFAULT_MODEL,
+  DEFAULT_PROVIDER,
   loadModelCatalog: loadModelCatalogMock,
-}));
-
-vi.mock("../agents/model-selection.js", () => ({
   getModelRefStatus: getModelRefStatusMock,
   normalizeProviderId: normalizeProviderIdMock,
   normalizeModelSelection: normalizeModelSelectionMock,
@@ -49,8 +52,6 @@ vi.mock("../agents/model-selection.js", () => ({
 import { resolveCronModelSelection } from "./isolated-agent/model-selection.js";
 
 const DEFAULT_MESSAGE = "do it";
-const DEFAULT_PROVIDER = "anthropic";
-const DEFAULT_MODEL = "claude-opus-4-6";
 
 type AgentTurnPayload = {
   kind: "agentTurn";

@@ -15,9 +15,6 @@ import {
   runCronTurn,
   withTempHome,
 } from "./isolated-agent.turn-test-helpers.js";
-import { setupRunCronIsolatedAgentTurnSuite } from "./isolated-agent/run.suite-helpers.js";
-
-setupRunCronIsolatedAgentTurnSuite();
 
 describe("runCronIsolatedAgentTurn session identity", () => {
   beforeEach(() => {

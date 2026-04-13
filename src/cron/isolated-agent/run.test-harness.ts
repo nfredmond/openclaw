@@ -315,7 +315,7 @@ function resetRunConfigMocks(): void {
   isExternalHookSessionMock.mockReturnValue(false);
   resolveHookExternalContentSourceMock.mockReturnValue(undefined);
   getSkillsSnapshotVersionMock.mockReturnValue(42);
-  loadModelCatalogMock.mockResolvedValue({ models: [] });
+  loadModelCatalogMock.mockResolvedValue([]);
   getRemoteSkillEligibilityMock.mockResolvedValue({ remoteSkillsEnabled: false });
 }
 
