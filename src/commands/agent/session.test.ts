@@ -14,8 +14,26 @@ vi.mock("../../config/sessions.js", async () => {
   );
   return {
     ...actual,
-    loadSessionStore: mocks.loadSessionStore,
+  };
+});
+
+vi.mock("../../config/sessions/paths.js", async () => {
+  const actual = await vi.importActual<typeof import("../../config/sessions/paths.js")>(
+    "../../config/sessions/paths.js",
+  );
+  return {
+    ...actual,
     resolveStorePath: mocks.resolveStorePath,
+  };
+});
+
+vi.mock("../../config/sessions/store-load.js", async () => {
+  const actual = await vi.importActual<typeof import("../../config/sessions/store-load.js")>(
+    "../../config/sessions/store-load.js",
+  );
+  return {
+    ...actual,
+    loadSessionStore: mocks.loadSessionStore,
   };
 });
 

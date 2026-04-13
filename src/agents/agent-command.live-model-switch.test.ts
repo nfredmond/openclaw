@@ -16,7 +16,7 @@ vi.mock("./model-fallback.js", () => ({
   runWithModelFallback: (params: unknown) => state.runWithModelFallbackMock(params),
 }));
 
-vi.mock("./command/attempt-execution.js", () => ({
+vi.mock("./command/attempt-execution.runtime.js", () => ({
   buildAcpResult: vi.fn(),
   createAcpVisibleTextAccumulator: vi.fn(),
   emitAcpAssistantDelta: vi.fn(),
@@ -30,7 +30,7 @@ vi.mock("./command/attempt-execution.js", () => ({
   sessionFileHasContent: vi.fn(async () => false),
 }));
 
-vi.mock("./command/delivery.js", () => ({
+vi.mock("./command/delivery.runtime.js", () => ({
   deliverAgentCommandResult: (...args: unknown[]) => state.deliverAgentCommandResultMock(...args),
 }));
 
@@ -48,7 +48,7 @@ vi.mock("./command/run-context.js", () => ({
   }),
 }));
 
-vi.mock("./command/session-store.js", () => ({
+vi.mock("./command/session-store.runtime.js", () => ({
   updateSessionStoreAfterAgentRun: (...args: unknown[]) =>
     state.updateSessionStoreAfterAgentRunMock(...args),
 }));
@@ -140,7 +140,7 @@ vi.mock("../config/sessions.js", () => ({
   ),
 }));
 
-vi.mock("../config/sessions/transcript.js", () => ({
+vi.mock("../config/sessions/transcript-resolve.runtime.js", () => ({
   resolveSessionTranscriptFile: async () => ({
     sessionFile: "/tmp/session.jsonl",
     sessionEntry: { sessionId: "session-1", updatedAt: Date.now() },
@@ -150,6 +150,7 @@ vi.mock("../config/sessions/transcript.js", () => ({
 vi.mock("../infra/agent-events.js", () => ({
   clearAgentRunContext: (...args: unknown[]) => state.clearAgentRunContextMock(...args),
   emitAgentEvent: (...args: unknown[]) => state.emitAgentEventMock(...args),
+  onAgentEvent: vi.fn(),
   registerAgentRunContext: (...args: unknown[]) => state.registerAgentRunContextMock(...args),
 }));
 
@@ -162,12 +163,18 @@ vi.mock("../infra/skills-remote.js", () => ({
 }));
 
 vi.mock("../logging/subsystem.js", () => ({
-  createSubsystemLogger: () => ({
-    info: vi.fn(),
-    warn: vi.fn(),
-    error: vi.fn(),
-    debug: vi.fn(),
-  }),
+  createSubsystemLogger: () => {
+    const logger = {
+      info: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn(),
+      debug: vi.fn(),
+      trace: vi.fn(),
+      raw: vi.fn(),
+      child: vi.fn(() => logger),
+    };
+    return logger;
+  },
 }));
 
 vi.mock("../routing/session-key.js", () => ({

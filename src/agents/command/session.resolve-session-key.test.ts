@@ -13,11 +13,40 @@ vi.mock("../../config/sessions.js", async () => {
   );
   return {
     ...actual,
-    loadSessionStore: (storePath: string) => hoisted.loadSessionStoreMock(storePath),
-    resolveStorePath: (store?: string, params?: { agentId?: string }) =>
-      `/stores/${params?.agentId ?? "main"}.json`,
     resolveAgentIdFromSessionKey: () => "main",
     resolveExplicitAgentSessionKey: () => undefined,
+  };
+});
+
+vi.mock("../../config/sessions/main-session.js", async () => {
+  const actual = await vi.importActual<typeof import("../../config/sessions/main-session.js")>(
+    "../../config/sessions/main-session.js",
+  );
+  return {
+    ...actual,
+    resolveAgentIdFromSessionKey: () => "main",
+    resolveExplicitAgentSessionKey: () => undefined,
+  };
+});
+
+vi.mock("../../config/sessions/paths.js", async () => {
+  const actual = await vi.importActual<typeof import("../../config/sessions/paths.js")>(
+    "../../config/sessions/paths.js",
+  );
+  return {
+    ...actual,
+    resolveStorePath: (_store?: string, params?: { agentId?: string }) =>
+      `/stores/${params?.agentId ?? "main"}.json`,
+  };
+});
+
+vi.mock("../../config/sessions/store-load.js", async () => {
+  const actual = await vi.importActual<typeof import("../../config/sessions/store-load.js")>(
+    "../../config/sessions/store-load.js",
+  );
+  return {
+    ...actual,
+    loadSessionStore: (storePath: string) => hoisted.loadSessionStoreMock(storePath),
   };
 });
 
