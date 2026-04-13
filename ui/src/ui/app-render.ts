@@ -844,7 +844,7 @@ export function renderApp(state: AppViewState) {
         state.setTab(tab as import("./navigation.ts").Tab);
       },
       onSlashCommand: (cmd) => {
-        state.setTab("chat" as import("./navigation.ts").Tab);
+        state.setTab("chat");
         state.chatMessage = cmd.endsWith(" ") ? cmd : `${cmd} `;
       },
     })}
@@ -1271,7 +1271,7 @@ export function renderApp(state: AppViewState) {
                 },
                 onNavigateToChat: (sessionKey) => {
                   switchChatSession(state, sessionKey);
-                  state.setTab("chat" as import("./navigation.ts").Tab);
+                  state.setTab("chat");
                 },
                 onToggleCheckpointDetails: (sessionKey) =>
                   toggleSessionCompactionCheckpoints(state, sessionKey),
@@ -1283,7 +1283,7 @@ export function renderApp(state: AppViewState) {
                   );
                   if (nextKey) {
                     switchChatSession(state, nextKey);
-                    state.setTab("chat" as import("./navigation.ts").Tab);
+                    state.setTab("chat");
                   }
                 },
                 onRestoreCheckpoint: (sessionKey, checkpointId) =>
@@ -1386,7 +1386,7 @@ export function renderApp(state: AppViewState) {
                 },
                 onNavigateToChat: (sessionKey) => {
                   switchChatSession(state, sessionKey);
-                  state.setTab("chat" as import("./navigation.ts").Tab);
+                  state.setTab("chat");
                 },
               }),
             )
@@ -1909,7 +1909,7 @@ export function renderApp(state: AppViewState) {
               },
               onNavigateToAgent: () => {
                 state.agentsSelectedId = resolvedAgentId;
-                state.setTab("agents" as import("./navigation.ts").Tab);
+                state.setTab("agents");
               },
               onSessionSelect: (key: string) => {
                 switchChatSession(state, key);
