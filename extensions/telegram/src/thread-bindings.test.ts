@@ -361,7 +361,7 @@ describe("telegram thread bindings", () => {
       manager.touchConversation("-100200300:topic:100");
 
       await __testing.resetTelegramThreadBindingsForTests();
-      await new Promise((resolve) => setTimeout(resolve, 0));
+      await Promise.resolve();
       expect(unhandled).toEqual([]);
     } finally {
       process.off("unhandledRejection", onUnhandledRejection);
