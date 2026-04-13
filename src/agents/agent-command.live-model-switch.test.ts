@@ -9,10 +9,7 @@ const state = vi.hoisted(() => ({
   clearAgentRunContextMock: vi.fn(),
   updateSessionStoreAfterAgentRunMock: vi.fn(),
   deliverAgentCommandResultMock: vi.fn(),
-}));
-
-const { resolveEffectiveModelFallbacksMock } = vi.hoisted(() => ({
-  resolveEffectiveModelFallbacksMock: vi.fn().mockReturnValue(undefined),
+  effectiveFallbacksMock: vi.fn().mockReturnValue(undefined),
 }));
 
 vi.mock("./model-fallback.js", () => ({
@@ -209,7 +206,7 @@ vi.mock("./agent-scope.js", () => ({
   listAgentIds: () => ["default"],
   resolveAgentConfig: () => undefined,
   resolveAgentDir: () => "/tmp/agent",
-  resolveEffectiveModelFallbacks: resolveEffectiveModelFallbacksMock,
+  resolveEffectiveModelFallbacks: state.effectiveFallbacksMock,
   resolveSessionAgentId: () => "default",
   resolveAgentSkillsFilter: () => undefined,
   resolveAgentWorkspaceDir: () => "/tmp/workspace",
@@ -474,7 +471,7 @@ describe("agentCommand – LiveSessionModelSwitchError retry", () => {
     });
     state.runAgentAttemptMock.mockResolvedValue(makeSuccessResult("openai", "gpt-5.4"));
 
-    resolveEffectiveModelFallbacksMock.mockClear();
+    state.effectiveFallbacksMock.mockClear();
 
     const agentCommand = await getAgentCommand();
     await agentCommand({
@@ -483,11 +480,11 @@ describe("agentCommand – LiveSessionModelSwitchError retry", () => {
       senderIsOwner: true,
     });
 
-    expect(resolveEffectiveModelFallbacksMock).toHaveBeenCalledTimes(2);
-    expect(resolveEffectiveModelFallbacksMock.mock.calls[0][0]).toMatchObject({
+    expect(state.effectiveFallbacksMock).toHaveBeenCalledTimes(2);
+    expect(state.effectiveFallbacksMock.mock.calls[0][0]).toMatchObject({
       hasSessionModelOverride: false,
     });
-    expect(resolveEffectiveModelFallbacksMock.mock.calls[1][0]).toMatchObject({
+    expect(state.effectiveFallbacksMock.mock.calls[1][0]).toMatchObject({
       hasSessionModelOverride: true,
     });
   });
@@ -514,7 +511,7 @@ describe("agentCommand – LiveSessionModelSwitchError retry", () => {
     });
     state.runAgentAttemptMock.mockResolvedValue(makeSuccessResult("anthropic", "claude"));
 
-    resolveEffectiveModelFallbacksMock.mockClear();
+    state.effectiveFallbacksMock.mockClear();
 
     const agentCommand = await getAgentCommand();
     await agentCommand({
@@ -523,11 +520,11 @@ describe("agentCommand – LiveSessionModelSwitchError retry", () => {
       senderIsOwner: true,
     });
 
-    expect(resolveEffectiveModelFallbacksMock).toHaveBeenCalledTimes(2);
-    expect(resolveEffectiveModelFallbacksMock.mock.calls[0][0]).toMatchObject({
+    expect(state.effectiveFallbacksMock).toHaveBeenCalledTimes(2);
+    expect(state.effectiveFallbacksMock.mock.calls[0][0]).toMatchObject({
       hasSessionModelOverride: false,
     });
-    expect(resolveEffectiveModelFallbacksMock.mock.calls[1][0]).toMatchObject({
+    expect(state.effectiveFallbacksMock.mock.calls[1][0]).toMatchObject({
       hasSessionModelOverride: false,
     });
   });
@@ -552,7 +549,7 @@ describe("agentCommand – LiveSessionModelSwitchError retry", () => {
     });
     state.runAgentAttemptMock.mockResolvedValue(makeSuccessResult("openai", "claude"));
 
-    resolveEffectiveModelFallbacksMock.mockClear();
+    state.effectiveFallbacksMock.mockClear();
 
     const agentCommand = await getAgentCommand();
     await agentCommand({
@@ -561,11 +558,11 @@ describe("agentCommand – LiveSessionModelSwitchError retry", () => {
       senderIsOwner: true,
     });
 
-    expect(resolveEffectiveModelFallbacksMock).toHaveBeenCalledTimes(2);
-    expect(resolveEffectiveModelFallbacksMock.mock.calls[0][0]).toMatchObject({
+    expect(state.effectiveFallbacksMock).toHaveBeenCalledTimes(2);
+    expect(state.effectiveFallbacksMock.mock.calls[0][0]).toMatchObject({
       hasSessionModelOverride: false,
     });
-    expect(resolveEffectiveModelFallbacksMock.mock.calls[1][0]).toMatchObject({
+    expect(state.effectiveFallbacksMock.mock.calls[1][0]).toMatchObject({
       hasSessionModelOverride: true,
     });
   });
