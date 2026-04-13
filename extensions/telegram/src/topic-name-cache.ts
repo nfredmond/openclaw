@@ -9,6 +9,7 @@ export type TopicEntry = {
 };
 
 const cache = new Map<string, TopicEntry>();
+let lastUpdatedAt = 0;
 
 function cacheKey(chatId: number | string, threadId: number | string): string {
   return `${chatId}:${threadId}`;
@@ -31,6 +32,12 @@ function evictOldest(): void {
   }
 }
 
+function nextUpdatedAt(): number {
+  const now = Date.now();
+  lastUpdatedAt = Math.max(now, lastUpdatedAt + 1);
+  return lastUpdatedAt;
+}
+
 export function updateTopicName(
   chatId: number | string,
   threadId: number | string,
@@ -43,7 +50,7 @@ export function updateTopicName(
     iconColor: patch.iconColor ?? existing?.iconColor,
     iconCustomEmojiId: patch.iconCustomEmojiId ?? existing?.iconCustomEmojiId,
     closed: patch.closed ?? existing?.closed,
-    updatedAt: Date.now(),
+    updatedAt: nextUpdatedAt(),
   };
   if (!merged.name) {
     return;
@@ -58,7 +65,7 @@ export function getTopicName(
 ): string | undefined {
   const entry = cache.get(cacheKey(chatId, threadId));
   if (entry) {
-    entry.updatedAt = Date.now();
+    entry.updatedAt = nextUpdatedAt();
   }
   return entry?.name;
 }
@@ -72,6 +79,7 @@ export function getTopicEntry(
 
 export function clearTopicNameCache(): void {
   cache.clear();
+  lastUpdatedAt = 0;
 }
 
 export function topicNameCacheSize(): number {
