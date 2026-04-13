@@ -1,4 +1,4 @@
-import { describe, expect, it, beforeEach } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   clearTopicNameCache,
   getTopicEntry,
@@ -9,7 +9,12 @@ import {
 
 describe("topic-name-cache", () => {
   beforeEach(() => {
+    vi.useRealTimers();
     clearTopicNameCache();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it("stores and retrieves a topic name", () => {
@@ -57,9 +62,12 @@ describe("topic-name-cache", () => {
     expect(topicNameCacheSize()).toBe(0);
   });
 
-  it("updates timestamps on write", () => {
+  it("updates timestamps on write", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-04-13T22:00:00.000Z"));
     updateTopicName(-100123, 42, { name: "A" });
     const t1 = getTopicEntry(-100123, 42)?.updatedAt ?? 0;
+    await vi.advanceTimersByTimeAsync(10);
     updateTopicName(-100123, 42, { name: "B" });
     const t2 = getTopicEntry(-100123, 42)?.updatedAt ?? 0;
     expect(t2).toBeGreaterThan(t1);
@@ -79,8 +87,11 @@ describe("topic-name-cache", () => {
     expect(getTopicName(-100000, 2048)).toBe("Topic 2048");
   });
 
-  it("refreshes recency on read so active topics survive eviction", () => {
+  it("refreshes recency on read so active topics survive eviction", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-04-13T22:00:00.000Z"));
     updateTopicName(-100000, 1, { name: "Active" });
+    await vi.advanceTimersByTimeAsync(10);
     for (let i = 2; i <= 2048; i++) {
       updateTopicName(-100000, i, { name: `Topic ${i}` });
     }
