@@ -5,7 +5,6 @@ const {
   DEFAULT_PROVIDER,
   loadModelCatalogMock,
   getModelRefStatusMock,
-  normalizeProviderIdMock,
   normalizeModelSelectionMock,
   resolveAllowedModelRefMock,
   resolveConfiguredModelRefMock,
@@ -15,9 +14,6 @@ const {
   DEFAULT_PROVIDER: "anthropic",
   loadModelCatalogMock: vi.fn(),
   getModelRefStatusMock: vi.fn(),
-  normalizeProviderIdMock: vi.fn((value: unknown) =>
-    typeof value === "string" && value.trim() ? value.trim().toLowerCase() : "",
-  ),
   normalizeModelSelectionMock: vi.fn((value: unknown) => {
     if (typeof value === "string" && value.trim()) {
       return value.trim();
@@ -42,7 +38,6 @@ vi.mock("./isolated-agent/run-model-selection.runtime.js", () => ({
   DEFAULT_PROVIDER,
   loadModelCatalog: loadModelCatalogMock,
   getModelRefStatus: getModelRefStatusMock,
-  normalizeProviderId: normalizeProviderIdMock,
   normalizeModelSelection: normalizeModelSelectionMock,
   resolveAllowedModelRef: resolveAllowedModelRefMock,
   resolveConfiguredModelRef: resolveConfiguredModelRefMock,
@@ -79,13 +74,13 @@ function parseModelRef(raw: string): { provider: string; model: string } | { err
   const trimmed = raw.trim();
   const slash = trimmed.indexOf("/");
   if (slash <= 0 || slash === trimmed.length - 1) {
-    return { error: `invalid model: ${trimmed}` };
+    return { error: "invalid model" };
   }
 
   const providerRaw = trimmed.slice(0, slash).trim().toLowerCase();
   const modelRaw = trimmed.slice(slash + 1).trim();
   if (!providerRaw || !modelRaw) {
-    return { error: `invalid model: ${trimmed}` };
+    return { error: "invalid model" };
   }
 
   const provider = providerRaw === "bedrock" ? "amazon-bedrock" : providerRaw;
@@ -205,7 +200,7 @@ describe("cron model formatting and precedence edge cases", () => {
         selectModel({
           payload: { kind: "agentTurn", message: DEFAULT_MESSAGE, model: "openai/" },
         }),
-      ).resolves.toEqual({ ok: false, error: "invalid model: openai/" });
+      ).resolves.toEqual({ ok: false, error: "invalid model" });
     });
 
     it("rejects model with leading slash (empty provider)", async () => {
@@ -213,7 +208,7 @@ describe("cron model formatting and precedence edge cases", () => {
         selectModel({
           payload: { kind: "agentTurn", message: DEFAULT_MESSAGE, model: "/gpt-4.1-mini" },
         }),
-      ).resolves.toEqual({ ok: false, error: "invalid model: /gpt-4.1-mini" });
+      ).resolves.toEqual({ ok: false, error: "invalid model" });
     });
 
     it("normalizes provider casing", async () => {
