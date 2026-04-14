@@ -4,7 +4,7 @@ import path from "node:path";
 import { setTimeout as sleep } from "node:timers/promises";
 import type { OpenClawConfig } from "openclaw/plugin-sdk/config-runtime";
 import { formatErrorMessage } from "openclaw/plugin-sdk/error-runtime";
-import { loadQaLabRuntimeModule } from "openclaw/plugin-sdk/qa-lab-runtime";
+import { loadQaRuntimeModule } from "openclaw/plugin-sdk/qa-runtime";
 import type { QaReportCheck } from "../../report.js";
 import { renderQaMarkdownReport } from "../../report.js";
 import { type QaProviderModeInput } from "../../run-config.js";
@@ -284,7 +284,7 @@ async function startMatrixQaLiveLaneGateway(params: {
   controlUiEnabled?: boolean;
   mutateConfig?: (cfg: OpenClawConfig) => OpenClawConfig;
 }): Promise<MatrixQaLiveLaneGatewayHarness> {
-  return (await loadQaLabRuntimeModule().startQaLiveLaneGateway(
+  return (await loadQaRuntimeModule().startQaLiveLaneGateway(
     params,
   )) as MatrixQaLiveLaneGatewayHarness;
 }
