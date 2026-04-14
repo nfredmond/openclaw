@@ -30,9 +30,8 @@
     "!dist/**/*.map",
     "!dist/plugin-sdk/.tsbuildinfo",
     "!dist/extensions/qa-channel/**",
-    "dist/extensions/qa-channel/runtime-api.js",
     "!dist/extensions/qa-lab/**",
-    "dist/extensions/qa-lab/runtime-api.js",
+    "!dist/extensions/qa-matrix/**",
     "docs/",
     "!docs/.generated/**",
     "!docs/.i18n/zh-CN.tm.jsonl",
@@ -765,6 +764,14 @@
     "./plugin-sdk/matrix-thread-bindings": {
       "types": "./dist/plugin-sdk/matrix-thread-bindings.d.ts",
       "default": "./dist/plugin-sdk/matrix-thread-bindings.js"
+    },
+    "./plugin-sdk/qa-lab-runtime": {
+      "types": "./dist/plugin-sdk/qa-lab-runtime.d.ts",
+      "default": "./dist/plugin-sdk/qa-lab-runtime.js"
+    },
+    "./plugin-sdk/qa-runner-runtime": {
+      "types": "./dist/plugin-sdk/qa-runner-runtime.d.ts",
+      "default": "./dist/plugin-sdk/qa-runner-runtime.js"
     },
     "./plugin-sdk/mattermost": {
       "types": "./dist/plugin-sdk/mattermost.d.ts",
