@@ -4,6 +4,29 @@
 - In chat replies, file references must be repo-root relative only (example: `src/telegram/index.ts:80`); never absolute paths or `~/...`.
 - Do not edit files covered by security-focused `CODEOWNERS` rules unless a listed owner explicitly asked for the change or is already reviewing it with you. Treat those paths as restricted surfaces, not drive-by cleanup.
 
+## ClawModeler Restart Notes
+
+- Working repo path in this machine: `/home/narford/code/ClawModeler/ClawModeler`.
+- Outer planning files live one level up at `/home/narford/code/ClawModeler/AGENTS.md` and `/home/narford/code/ClawModeler/plan.md`.
+- Current product direction: ClawModeler is a local-first Tauri + React desktop workbench backed by the Python `clawmodeler-engine` sidecar for transportation sketch-planning. Keep outputs labeled as screening/sketch-planning unless a later module explicitly supports a more detailed analysis tier.
+- Active base PR: `openclaw/openclaw#65044` (`codex/add-clawmodeler-sidecar` into `main`) adds the sidecar, CLI workflow, desktop package, and ClawModeler scripts. It has repeatedly been mergeable; if a fresh chat resumes this work, check this PR first with `gh pr view 65044 --repo openclaw/openclaw --json state,mergeable,statusCheckRollup,url`.
+- The current token has not been able to merge upstream PRs (`mergePullRequest` permission denied). If #65044 is green, the user or a maintainer must merge it manually, or the session needs a token with merge permission.
+- Active follow-up branch: `codex/clawmodeler-demo-workspace`, pushed to `nfredmond/openclaw`.
+- Stacked follow-up PR: `nfredmond/openclaw#1` (`codex/clawmodeler-demo-workspace` into `codex/add-clawmodeler-sidecar`) adds the sample workspace flow, rural demo fixtures, run-summary panel, relative artifact paths, and mobile layout fixes.
+- After #65044 merges, rebase or recreate `codex/clawmodeler-demo-workspace` onto latest upstream `main`, rerun focused checks, push, and open the equivalent PR against `openclaw/openclaw:main`.
+- Useful ClawModeler commands:
+  - `pnpm clawmodeler:test`
+  - `pnpm clawmodeler:ui:test`
+  - `pnpm clawmodeler:ui:build`
+  - `pnpm clawmodeler:tauri:build`
+  - `pnpm clawmodeler:ui:dev` for browser UI development
+  - `pnpm clawmodeler:tauri:dev` for the desktop shell
+  - `python3 -m clawmodeler_engine sample --workspace /tmp/clawmodeler-workbench --run-id demo`
+  - `python3 -m clawmodeler_engine workflow full --workspace /tmp/clawmodeler-workbench --inputs ... --question ... --run-id demo --scenarios baseline infill-growth --skip-bridges`
+- Fast browser smoke used during this work: start the UI on an open port, load `http://127.0.0.1:{port}/`, click `Load Sample Data`, then `Run Full Workflow`; verify `Export ready`, `Run Summary`, `Report Preview`, and relative artifact paths such as `runs/demo/manifest.json`.
+- Recent local verification on the stacked branch included `pnpm clawmodeler:test`, `pnpm clawmodeler:ui:test`, `pnpm clawmodeler:ui:build`, `pnpm tsgo`, `git diff --check`, full pre-commit `pnpm check`, `pnpm clawmodeler:tauri:build`, and Playwright desktop/mobile smoke checks.
+- Before new edits, run `git status -sb` and preserve user edits. This work has involved merge commits to keep the PR branches current with fast-moving `origin/main`; do not reset or force-push unless the user explicitly asks.
+
 ## Project Structure & Module Organization
 
 - Source code: `src/` (CLI wiring in `src/cli`, commands in `src/commands`, web provider in `src/provider-web.ts`, infra in `src/infra`, media pipeline in `src/media`).
