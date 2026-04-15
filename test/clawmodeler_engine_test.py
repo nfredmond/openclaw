@@ -65,6 +65,19 @@ class ClawModelerEngineTest(unittest.TestCase):
         self.assertIn("dtalite", inventory)
         self.assertIn("agent_next_step", inventory["sumo"])
 
+    def test_sample_command_writes_demo_inputs_without_running(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            workspace = Path(temp_dir) / "sample"
+            result = self.run_engine("sample", "--workspace", str(workspace), "--run-id", "trial")
+            payload = json.loads(result.stdout)
+            self.assertEqual(payload["workspace"], str(workspace))
+            self.assertEqual(payload["run_id"], "trial")
+            self.assertEqual(payload["scenarios"], ["baseline", "infill-growth"])
+            self.assertEqual(len(payload["input_paths"]), 5)
+            self.assertTrue((workspace / "demo-source" / "zones.geojson").exists())
+            self.assertTrue((workspace / "demo-source" / "question.json").exists())
+            self.assertFalse((workspace / "runs" / "trial" / "manifest.json").exists())
+
     def test_toolbox_packaged_fallback_and_model_root_override(self) -> None:
         toolbox = load_toolbox()
         self.assertEqual(toolbox["schema_version"], CURRENT_SCHEMA_VERSION)

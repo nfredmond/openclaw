@@ -1,0 +1,4 @@
+stop_id,stop_name,stop_lat,stop_lon
+s1,Downtown,38.000,-121.000
+s2,Northside,38.020,-121.015
+s3,Southgate,37.982,-120.980

@@ -201,6 +201,18 @@ function clawModelerApiPlugin(): Plugin {
             return;
           }
 
+          if (route === "/sample") {
+            const result = await runEngine([
+              "sample",
+              "--workspace",
+              requiredString(body, "workspace"),
+              "--run-id",
+              typeof body.runId === "string" && body.runId.trim() ? body.runId.trim() : "demo",
+            ]);
+            sendJson(response, result.ok ? 200 : 500, result);
+            return;
+          }
+
           if (route === "/diagnose") {
             const args = ["workflow", "diagnose", "--workspace", requiredString(body, "workspace")];
             const runId = typeof body.runId === "string" ? body.runId.trim() : "";

@@ -1,0 +1,29 @@
+{
+  "artifact_type": "question",
+  "daily_vmt_per_capita": 19,
+  "kg_co2e_per_vmt": 0.404,
+  "proxy_speed_kph": 45,
+  "question_type": "accessibility",
+  "scenario_intent": "Compare current conditions with a modest infill growth sketch plan.",
+  "scenarios": [
+    {
+      "name": "Current Conditions",
+      "scenario_id": "baseline"
+    },
+    {
+      "jobs_multiplier": 1.18,
+      "name": "Infill Growth",
+      "population_multiplier": 1.08,
+      "scenario_id": "infill-growth",
+      "zone_adjustments": {
+        "downtown": {
+          "jobs_delta": 300
+        },
+        "southgate": {
+          "population_delta": 250
+        }
+      }
+    }
+  ],
+  "schema_version": 1
+}

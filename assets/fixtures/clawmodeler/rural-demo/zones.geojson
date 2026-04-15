@@ -1,0 +1,38 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "zone_id": "downtown",
+        "name": "Downtown"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[-121.01, 37.99], [-120.99, 37.99], [-120.99, 38.01], [-121.01, 38.01], [-121.01, 37.99]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "zone_id": "northside",
+        "name": "Northside"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[-121.025, 38.01], [-121.005, 38.01], [-121.005, 38.03], [-121.025, 38.03], [-121.025, 38.01]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "zone_id": "southgate",
+        "name": "Southgate"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[-120.99, 37.972], [-120.97, 37.972], [-120.97, 37.992], [-120.99, 37.992], [-120.99, 37.972]]]
+      }
+    }
+  ]
+}

@@ -286,6 +286,21 @@ small {
   gap: 14px;
 }
 
+.sample-callout {
+  display: grid;
+  gap: 8px;
+  border: 1px solid #cfd8d3;
+  border-radius: 8px;
+  background: #f6f8f7;
+  padding: 12px;
+}
+
+.sample-callout p {
+  margin: 0;
+  color: #43524c;
+  line-height: 1.4;
+}
+
 .section-head {
   display: flex;
   align-items: center;

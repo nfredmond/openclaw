@@ -16,6 +16,25 @@ export type WorkspaceArtifacts = {
   files: string[];
 };
 
+export type SampleWorkspace = {
+  workspace: string;
+  run_id?: string;
+  runId?: string;
+  input_paths?: string[];
+  inputPaths?: string[];
+  question_path?: string;
+  questionPath?: string;
+  scenarios?: string[];
+};
+
+export type SampleWorkspaceFields = {
+  workspace: string;
+  runId: string;
+  inputPaths: string;
+  questionPath: string;
+  scenarios: string;
+};
+
 export function normalizePathList(input: string): string[] {
   return input
     .split(/\r?\n|,/u)
@@ -57,6 +76,17 @@ export function buildFullWorkflowArgs(params: {
     args.push("--skip-bridges");
   }
   return args;
+}
+
+export function sampleWorkspaceFields(sample: SampleWorkspace): SampleWorkspaceFields {
+  const inputPaths = sample.inputPaths ?? sample.input_paths ?? [];
+  return {
+    workspace: sample.workspace,
+    runId: sample.runId ?? sample.run_id ?? "demo",
+    inputPaths: inputPaths.join("\n"),
+    questionPath: sample.questionPath ?? sample.question_path ?? "",
+    scenarios: (sample.scenarios?.length ? sample.scenarios : ["baseline"]).join(" "),
+  };
 }
 
 export function summarizeQa(qaReport: Record<string, unknown> | null): QaSummary {

@@ -8,7 +8,7 @@ from pathlib import Path
 
 from .bridge_prepare import prepare_all_bridges
 from .bridge_validation import validate_all_bridges
-from .demo import write_demo_inputs
+from .demo import demo_workspace_payload, write_demo_inputs
 from .dtalite_bridge import prepare_dtalite_bridge
 from .matsim_bridge import prepare_matsim_bridge
 from .orchestration import select_engine, write_export, write_intake, write_plan, write_run
@@ -88,6 +88,11 @@ def build_parser() -> argparse.ArgumentParser:
     demo.add_argument("--workspace", required=True, type=Path)
     demo.add_argument("--run-id", default="demo")
     demo.set_defaults(func=command_demo)
+
+    sample = subparsers.add_parser("sample", help="Create sample input files without running.")
+    sample.add_argument("--workspace", required=True, type=Path)
+    sample.add_argument("--run-id", default="demo")
+    sample.set_defaults(func=command_sample)
 
     workflow = subparsers.add_parser("workflow", help="Run end-to-end modeling workflows.")
     workflow_subparsers = workflow.add_subparsers(required=True)
@@ -362,6 +367,12 @@ def command_demo(args: argparse.Namespace) -> None:
     )
 
 
+def command_sample(args: argparse.Namespace) -> None:
+    ensure_workspace(args.workspace)
+    inputs = write_demo_inputs(args.workspace)
+    print(json.dumps(demo_workspace_payload(args.workspace, args.run_id, inputs), indent=2))
+
+
 def command_workflow_full(args: argparse.Namespace) -> None:
     ensure_workspace(args.workspace)
     path = run_full_workflow(
@@ -532,4 +543,3 @@ def command_graph_map_zones(args: argparse.Namespace) -> None:
     ensure_workspace(args.workspace)
     path = build_zone_node_map(args.workspace, graph_path=args.graph, output_path=args.output)
     print(json.dumps({"zone_node_map": str(path)}))
-

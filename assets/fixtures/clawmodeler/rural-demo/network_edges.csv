@@ -1,0 +1,4 @@
+from_zone_id,to_zone_id,minutes
+downtown,northside,12
+downtown,southgate,18
+northside,southgate,28

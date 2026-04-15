@@ -6,7 +6,7 @@ from typing import Any
 from .bridge_prepare import prepare_all_bridges
 from .bridge_validation import validate_all_bridges
 from .contracts import stamp_contract, validate_contract
-from .demo import write_demo_inputs
+from .demo import DEMO_SCENARIOS, write_demo_inputs
 from .orchestration import write_export, write_intake, write_plan, write_run
 from .project import init_workspace
 from .toolbox import assess_toolbox
@@ -92,7 +92,7 @@ def run_demo_full_workflow(workspace: Path, run_id: str = "demo") -> Path:
         ],
         question_path=inputs["question"],
         run_id=run_id,
-        scenarios=["baseline", "infill-growth"],
+        scenarios=DEMO_SCENARIOS,
         export_format="md",
         prepare_bridges=True,
     )

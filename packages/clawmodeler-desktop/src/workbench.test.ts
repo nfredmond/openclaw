@@ -5,6 +5,7 @@ import {
   manifestOutputCategories,
   normalizePathList,
   normalizeScenarios,
+  sampleWorkspaceFields,
   summarizeQa,
 } from "./workbench.js";
 
@@ -48,6 +49,24 @@ describe("clawmodeler workbench helpers", () => {
       "baseline",
       "--skip-bridges",
     ]);
+  });
+
+  it("maps sample workspace payloads into form fields", () => {
+    expect(
+      sampleWorkspaceFields({
+        workspace: "/tmp/clawmodeler-workbench",
+        run_id: "demo",
+        input_paths: ["/tmp/zones.geojson", "/tmp/socio.csv"],
+        question_path: "/tmp/question.json",
+        scenarios: ["baseline", "infill-growth"],
+      }),
+    ).toEqual({
+      workspace: "/tmp/clawmodeler-workbench",
+      runId: "demo",
+      inputPaths: "/tmp/zones.geojson\n/tmp/socio.csv",
+      questionPath: "/tmp/question.json",
+      scenarios: "baseline infill-growth",
+    });
   });
 
   it("summarizes QA reports", () => {

@@ -5,7 +5,9 @@ import {
   manifestOutputCategories,
   normalizePathList,
   normalizeScenarios,
+  sampleWorkspaceFields,
   summarizeQa,
+  type SampleWorkspace,
 } from "./workbench.js";
 
 type ApiResult<T = unknown> = {
@@ -149,6 +151,17 @@ async function tauriApi<T = unknown>(path: string, body?: unknown): Promise<ApiR
       ],
     });
   }
+  if (path === "/api/clawmodeler/sample") {
+    return await invoke<ApiResult<T>>("clawmodeler_run", {
+      args: [
+        "sample",
+        "--workspace",
+        stringField(payload, "workspace"),
+        "--run-id",
+        stringField(payload, "runId", "demo"),
+      ],
+    });
+  }
   if (path === "/api/clawmodeler/diagnose") {
     const args = ["workflow", "diagnose", "--workspace", stringField(payload, "workspace")];
     const runId = stringField(payload, "runId").trim();
@@ -228,6 +241,26 @@ async function refreshDoctor() {
   });
 }
 
+async function loadSampleWorkspace() {
+  await runAction("Loading sample data", async () => {
+    const result = await api<SampleWorkspace>("/api/clawmodeler/sample", {
+      workspace: state.workspace,
+      runId: state.runId,
+    });
+    if (result.json) {
+      const fields = sampleWorkspaceFields(result.json);
+      state.workspace = fields.workspace;
+      state.runId = fields.runId;
+      state.inputPaths = fields.inputPaths;
+      state.questionPath = fields.questionPath;
+      state.scenarios = fields.scenarios;
+      state.skipBridges = false;
+      saveForm();
+    }
+    return result;
+  });
+}
+
 async function refreshArtifacts(showBusy = true) {
   saveForm();
   const path = `/api/clawmodeler/workspace?workspace=${encodeURIComponent(
@@ -298,6 +331,11 @@ function bindControls() {
       void runAction("Running demo workflow", () =>
         api("/api/clawmodeler/demo-full", { workspace: state.workspace, runId: state.runId }),
       );
+    });
+  appRoot
+    .querySelector<HTMLButtonElement>("[data-action='sample']")
+    ?.addEventListener("click", () => {
+      void loadSampleWorkspace();
     });
   appRoot
     .querySelector<HTMLButtonElement>("[data-action='full']")
@@ -496,6 +534,11 @@ function render() {
               <input id="skip-bridges" type="checkbox" ${state.skipBridges ? "checked" : ""} />
               Skip bridge packages
             </label>
+            <div class="sample-callout">
+              <strong>New project trial</strong>
+              <p>Load the rural demo inputs, then run the full workflow with baseline and infill-growth scenarios.</p>
+              <button data-action="sample" ${state.busy ? "disabled" : ""}>Load Sample Data</button>
+            </div>
           </section>
 
           <section class="panel actions-panel" id="run">
@@ -508,7 +551,7 @@ function render() {
             </div>
             <div class="button-grid">
               <button data-action="init" ${state.busy ? "disabled" : ""}>Create Workspace</button>
-              <button data-action="demo" ${state.busy ? "disabled" : ""}>Run Demo</button>
+              <button data-action="demo" ${state.busy ? "disabled" : ""}>Run Sample Now</button>
               <button data-action="full" ${state.busy ? "disabled" : ""}>Run Full Workflow</button>
               <button data-action="diagnose" ${state.busy ? "disabled" : ""}>Diagnose</button>
               <button data-action="report" ${state.busy ? "disabled" : ""}>Regenerate Report</button>

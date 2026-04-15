@@ -6,6 +6,8 @@ from pathlib import Path
 
 from .contracts import CURRENT_SCHEMA_VERSION
 
+DEMO_SCENARIOS = ["baseline", "infill-growth"]
+
 
 def write_demo_inputs(workspace: Path) -> dict[str, Path]:
     source_dir = workspace / "demo-source"
@@ -90,6 +92,24 @@ def write_demo_inputs(workspace: Path) -> dict[str, Path]:
         "network_edges": network_edges,
         "gtfs": gtfs,
         "question": question,
+    }
+
+
+def demo_workspace_payload(workspace: Path, run_id: str, inputs: dict[str, Path]) -> dict[str, object]:
+    input_paths = [
+        inputs["zones"],
+        inputs["socio"],
+        inputs["projects"],
+        inputs["network_edges"],
+        inputs["gtfs"],
+    ]
+    return {
+        "workspace": str(workspace),
+        "run_id": run_id,
+        "input_paths": [str(path) for path in input_paths],
+        "question_path": str(inputs["question"]),
+        "scenarios": DEMO_SCENARIOS,
+        "source_dir": str(workspace / "demo-source"),
     }
 
 
