@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   buildFullWorkflowArgs,
+  buildSampleWorkflowArgs,
   countJsonLines,
   displayArtifactPath,
   manifestOutputCategories,
@@ -69,6 +70,37 @@ describe("clawmodeler workbench helpers", () => {
       questionPath: "/tmp/question.json",
       scenarios: "baseline infill-growth",
     });
+  });
+
+  it("builds full workflow args from a sample workspace payload", () => {
+    expect(
+      buildSampleWorkflowArgs(
+        {
+          workspace: "/tmp/clawmodeler-workbench",
+          run_id: "demo",
+          input_paths: ["/tmp/zones.geojson", "/tmp/socio.csv"],
+          question_path: "/tmp/question.json",
+          scenarios: ["baseline", "infill-growth"],
+        },
+        true,
+      ),
+    ).toEqual([
+      "workflow",
+      "full",
+      "--workspace",
+      "/tmp/clawmodeler-workbench",
+      "--inputs",
+      "/tmp/zones.geojson",
+      "/tmp/socio.csv",
+      "--question",
+      "/tmp/question.json",
+      "--run-id",
+      "demo",
+      "--scenarios",
+      "baseline",
+      "infill-growth",
+      "--skip-bridges",
+    ]);
   });
 
   it("summarizes QA reports", () => {

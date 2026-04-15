@@ -2,6 +2,7 @@ import "./styles.css";
 import { invoke } from "@tauri-apps/api/core";
 import {
   buildFullWorkflowArgs,
+  buildSampleWorkflowArgs,
   displayArtifactPath,
   manifestOutputCategories,
   normalizePathList,
@@ -250,16 +251,36 @@ async function loadSampleWorkspace() {
       runId: state.runId,
     });
     if (result.json) {
-      const fields = sampleWorkspaceFields(result.json);
-      state.workspace = fields.workspace;
-      state.runId = fields.runId;
-      state.inputPaths = fields.inputPaths;
-      state.questionPath = fields.questionPath;
-      state.scenarios = fields.scenarios;
-      state.skipBridges = false;
-      saveForm();
+      applySampleFields(result.json);
     }
     return result;
+  });
+}
+
+function applySampleFields(sample: SampleWorkspace) {
+  const fields = sampleWorkspaceFields(sample);
+  state.workspace = fields.workspace;
+  state.runId = fields.runId;
+  state.inputPaths = fields.inputPaths;
+  state.questionPath = fields.questionPath;
+  state.scenarios = fields.scenarios;
+  state.skipBridges = false;
+  saveForm();
+}
+
+async function runSampleReport() {
+  await runAction("Running sample report", async () => {
+    const sampleResult = await api<SampleWorkspace>("/api/clawmodeler/sample", {
+      workspace: state.workspace,
+      runId: state.runId,
+    });
+    if (!sampleResult.json) {
+      throw new Error("Sample workspace did not return input paths.");
+    }
+    applySampleFields(sampleResult.json);
+    return await api("/api/clawmodeler/run", {
+      args: buildSampleWorkflowArgs(sampleResult.json, false),
+    });
   });
 }
 
@@ -338,6 +359,11 @@ function bindControls() {
     .querySelector<HTMLButtonElement>("[data-action='sample']")
     ?.addEventListener("click", () => {
       void loadSampleWorkspace();
+    });
+  appRoot
+    .querySelector<HTMLButtonElement>("[data-action='sample-report']")
+    ?.addEventListener("click", () => {
+      void runSampleReport();
     });
   appRoot
     .querySelector<HTMLButtonElement>("[data-action='full']")
@@ -569,7 +595,10 @@ function render() {
             <div class="sample-callout">
               <strong>New project trial</strong>
               <p>Load the rural demo inputs, then run the full workflow with baseline and infill-growth scenarios.</p>
-              <button data-action="sample" ${state.busy ? "disabled" : ""}>Load Sample Data</button>
+              <div class="sample-actions">
+                <button data-action="sample-report" ${state.busy ? "disabled" : ""}>Run Sample Report</button>
+                <button data-action="sample" ${state.busy ? "disabled" : ""}>Load Sample Data</button>
+              </div>
             </div>
           </section>
 

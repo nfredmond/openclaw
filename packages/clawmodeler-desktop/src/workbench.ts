@@ -98,6 +98,18 @@ export function sampleWorkspaceFields(sample: SampleWorkspace): SampleWorkspaceF
   };
 }
 
+export function buildSampleWorkflowArgs(sample: SampleWorkspace, skipBridges = false): string[] {
+  const fields = sampleWorkspaceFields(sample);
+  return buildFullWorkflowArgs({
+    workspace: fields.workspace,
+    inputs: normalizePathList(fields.inputPaths),
+    question: fields.questionPath,
+    runId: fields.runId,
+    scenarios: normalizeScenarios(fields.scenarios),
+    skipBridges,
+  });
+}
+
 export function summarizeQa(qaReport: Record<string, unknown> | null): QaSummary {
   if (!qaReport) {
     return { label: "No QA report", tone: "unknown", blockers: [] };

@@ -307,6 +307,22 @@ small {
   line-height: 1.4;
 }
 
+.sample-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 8px;
+}
+
+.sample-actions button:last-child {
+  border-color: #b8c2bd;
+  background: #ffffff;
+  color: #1c6b5a;
+}
+
+.sample-actions button:last-child:hover:not(:disabled) {
+  background: #eef4f1;
+}
+
 .section-head {
   display: flex;
   align-items: center;
@@ -498,6 +514,7 @@ small {
   }
 
   .button-grid,
+  .sample-actions,
   .summary-grid {
     grid-template-columns: 1fr;
   }
