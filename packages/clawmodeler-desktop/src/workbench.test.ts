@@ -4,6 +4,7 @@ import {
   buildSampleWorkflowArgs,
   countJsonLines,
   displayArtifactPath,
+  manifestLimitations,
   manifestOutputCategories,
   normalizePathList,
   normalizeScenarios,
@@ -118,6 +119,15 @@ describe("clawmodeler workbench helpers", () => {
       "bridges",
       "maps",
       "tables",
+    ]);
+  });
+
+  it("surfaces manifest limitations with a screening fallback", () => {
+    expect(
+      manifestLimitations({ assumptions: [" Screening only. ", "", "Proxy routing."] }),
+    ).toEqual(["Screening only.", "Proxy routing."]);
+    expect(manifestLimitations(null)).toEqual([
+      "Run outputs are screening-level until a manifest records the selected methods, assumptions, and limitations.",
     ]);
   });
 

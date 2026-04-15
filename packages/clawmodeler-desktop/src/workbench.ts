@@ -145,6 +145,19 @@ export function manifestOutputCategories(manifest: Record<string, unknown> | nul
   return Object.keys(outputs).toSorted();
 }
 
+export function manifestLimitations(manifest: Record<string, unknown> | null): string[] {
+  const assumptions = manifest?.assumptions;
+  if (Array.isArray(assumptions)) {
+    const values = assumptions.map((item) => String(item).trim()).filter(Boolean);
+    if (values.length > 0) {
+      return values;
+    }
+  }
+  return [
+    "Run outputs are screening-level until a manifest records the selected methods, assumptions, and limitations.",
+  ];
+}
+
 function arrayFieldLength(source: Record<string, unknown> | null, key: string): number {
   const value = source?.[key];
   return Array.isArray(value) ? value.length : 0;

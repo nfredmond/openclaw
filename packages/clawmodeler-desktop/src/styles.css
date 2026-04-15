@@ -479,6 +479,18 @@ small {
   overflow-wrap: anywhere;
 }
 
+.limitations-panel ul {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding-left: 18px;
+}
+
+.limitations-panel li {
+  color: #31413a;
+  line-height: 1.4;
+}
+
 .report-panel {
   grid-column: span 1;
 }

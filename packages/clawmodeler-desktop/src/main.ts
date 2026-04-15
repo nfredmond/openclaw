@@ -4,6 +4,7 @@ import {
   buildFullWorkflowArgs,
   buildSampleWorkflowArgs,
   displayArtifactPath,
+  manifestLimitations,
   manifestOutputCategories,
   normalizePathList,
   normalizeScenarios,
@@ -436,6 +437,7 @@ function renderArtifacts() {
   const qa = summarizeQa(artifacts?.qaReport ?? null);
   const categories = manifestOutputCategories(artifacts?.manifest ?? null);
   const summary = workspaceRunSummary(artifacts ?? null);
+  const limitations = manifestLimitations(artifacts?.manifest ?? null);
   const report = artifacts?.reportMarkdown?.trim();
   const scenarioLabel = summary.scenarios.length ? summary.scenarios.join(", ") : "No scenarios";
   const reportPath = summary.reportPath || `${artifacts?.workspace ?? state.workspace}/reports`;
@@ -451,6 +453,22 @@ function renderArtifacts() {
         <span>${escapeHtml(artifacts?.runId ?? state.runId)}</span>
         <small>run id</small>
       </div>
+    </section>
+
+    <section class="panel limitations-panel">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Methods</p>
+          <h2>Limitations</h2>
+        </div>
+        <span>Screening</span>
+      </div>
+      <ul>
+        ${limitations
+          .slice(0, 6)
+          .map((item) => `<li>${escapeHtml(item)}</li>`)
+          .join("")}
+      </ul>
     </section>
 
     <section class="panel">
