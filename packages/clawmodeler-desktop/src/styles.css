@@ -308,6 +308,31 @@ small {
   gap: 12px;
 }
 
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.summary-grid div {
+  border: 1px solid #d8dfdb;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.summary-grid strong {
+  display: block;
+  font-size: 1.4rem;
+}
+
+.path-line {
+  margin: 10px 0 0;
+  overflow-wrap: anywhere;
+  color: #43524c;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.84rem;
+}
+
 .section-head button {
   min-width: 94px;
 }

@@ -16,6 +16,15 @@ export type WorkspaceArtifacts = {
   files: string[];
 };
 
+export type RunSummary = {
+  inputCount: number;
+  outputCount: number;
+  factBlockCount: number;
+  scenarios: string[];
+  reportPath: string;
+  workflow: string;
+};
+
 export type SampleWorkspace = {
   workspace: string;
   run_id?: string;
@@ -122,4 +131,37 @@ export function manifestOutputCategories(manifest: Record<string, unknown> | nul
     return [];
   }
   return Object.keys(outputs).toSorted();
+}
+
+function arrayFieldLength(source: Record<string, unknown> | null, key: string): number {
+  const value = source?.[key];
+  return Array.isArray(value) ? value.length : 0;
+}
+
+function stringArrayField(source: Record<string, unknown> | null, key: string): string[] {
+  const value = source?.[key];
+  return Array.isArray(value) ? value.map((item) => String(item)) : [];
+}
+
+export function workspaceRunSummary(artifacts: WorkspaceArtifacts | null): RunSummary {
+  const manifest = artifacts?.manifest ?? null;
+  const workflowReport = artifacts?.workflowReport ?? null;
+  const workflowArtifacts = workflowReport?.artifacts;
+  const reportValue =
+    workflowArtifacts && typeof workflowArtifacts === "object" && !Array.isArray(workflowArtifacts)
+      ? (workflowArtifacts as Record<string, unknown>).report
+      : undefined;
+  return {
+    inputCount: arrayFieldLength(manifest, "input_hashes"),
+    outputCount: arrayFieldLength(manifest, "output_hashes"),
+    factBlockCount: typeof manifest?.fact_block_count === "number" ? manifest.fact_block_count : 0,
+    scenarios: stringArrayField(workflowReport, "scenarios"),
+    reportPath: typeof reportValue === "string" ? reportValue : "",
+    workflow: typeof workflowReport?.workflow === "string" ? workflowReport.workflow : "",
+  };
+}
+
+export function displayArtifactPath(filePath: string, workspace: string): string {
+  const prefix = workspace.endsWith("/") ? workspace : `${workspace}/`;
+  return filePath.startsWith(prefix) ? filePath.slice(prefix.length) : filePath;
 }

@@ -2,11 +2,13 @@ import "./styles.css";
 import { invoke } from "@tauri-apps/api/core";
 import {
   buildFullWorkflowArgs,
+  displayArtifactPath,
   manifestOutputCategories,
   normalizePathList,
   normalizeScenarios,
   sampleWorkspaceFields,
   summarizeQa,
+  workspaceRunSummary,
   type SampleWorkspace,
 } from "./workbench.js";
 
@@ -407,7 +409,10 @@ function renderArtifacts() {
   const artifacts = state.artifacts;
   const qa = summarizeQa(artifacts?.qaReport ?? null);
   const categories = manifestOutputCategories(artifacts?.manifest ?? null);
+  const summary = workspaceRunSummary(artifacts ?? null);
   const report = artifacts?.reportMarkdown?.trim();
+  const scenarioLabel = summary.scenarios.length ? summary.scenarios.join(", ") : "No scenarios";
+  const reportPath = summary.reportPath || `${artifacts?.workspace ?? state.workspace}/reports`;
 
   return `
     <section class="panel qa-panel ${qa.tone}">
@@ -425,6 +430,31 @@ function renderArtifacts() {
     <section class="panel">
       <div class="section-head">
         <div>
+          <p class="eyebrow">Run Summary</p>
+          <h2>${summary.workflow ? escapeHtml(summary.workflow) : "No run loaded"}</h2>
+        </div>
+        <span>${escapeHtml(scenarioLabel)}</span>
+      </div>
+      <div class="summary-grid">
+        <div>
+          <strong>${summary.inputCount}</strong>
+          <small>inputs hashed</small>
+        </div>
+        <div>
+          <strong>${summary.outputCount}</strong>
+          <small>outputs hashed</small>
+        </div>
+        <div>
+          <strong>${summary.factBlockCount}</strong>
+          <small>fact blocks</small>
+        </div>
+      </div>
+      <p class="path-line">${escapeHtml(reportPath)}</p>
+    </section>
+
+    <section class="panel">
+      <div class="section-head">
+        <div>
           <p class="eyebrow">Outputs</p>
           <h2>Artifacts</h2>
         </div>
@@ -434,7 +464,9 @@ function renderArtifacts() {
         artifacts?.files.length
           ? `<ul class="artifact-list">${artifacts.files
               .slice(0, 80)
-              .map((file) => `<li>${escapeHtml(file)}</li>`)
+              .map(
+                (file) => `<li>${escapeHtml(displayArtifactPath(file, artifacts.workspace))}</li>`,
+              )
               .join("")}</ul>`
           : `<p class="muted">Run a workflow to create manifests, tables, bridge packages, and reports.</p>`
       }

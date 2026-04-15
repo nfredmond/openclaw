@@ -2,11 +2,13 @@ import { describe, expect, it } from "vitest";
 import {
   buildFullWorkflowArgs,
   countJsonLines,
+  displayArtifactPath,
   manifestOutputCategories,
   normalizePathList,
   normalizeScenarios,
   sampleWorkspaceFields,
   summarizeQa,
+  workspaceRunSummary,
 } from "./workbench.js";
 
 describe("clawmodeler workbench helpers", () => {
@@ -85,5 +87,40 @@ describe("clawmodeler workbench helpers", () => {
       "maps",
       "tables",
     ]);
+  });
+
+  it("summarizes run evidence and shortens artifact paths", () => {
+    expect(
+      workspaceRunSummary({
+        workspace: "/tmp/clawmodeler-workbench",
+        runId: "demo",
+        manifest: {
+          input_hashes: [{ path: "zones.geojson" }, { path: "socio.csv" }],
+          output_hashes: [{ path: "accessibility.csv" }],
+          fact_block_count: 7,
+        },
+        qaReport: null,
+        workflowReport: {
+          workflow: "full",
+          scenarios: ["baseline", "infill-growth"],
+          artifacts: { report: "/tmp/clawmodeler-workbench/reports/demo_report.md" },
+        },
+        reportMarkdown: null,
+        files: [],
+      }),
+    ).toEqual({
+      inputCount: 2,
+      outputCount: 1,
+      factBlockCount: 7,
+      scenarios: ["baseline", "infill-growth"],
+      reportPath: "/tmp/clawmodeler-workbench/reports/demo_report.md",
+      workflow: "full",
+    });
+    expect(
+      displayArtifactPath(
+        "/tmp/clawmodeler-workbench/runs/demo/manifest.json",
+        "/tmp/clawmodeler-workbench",
+      ),
+    ).toBe("runs/demo/manifest.json");
   });
 });
