@@ -6,6 +6,7 @@ import {
   pruneInstalledPackageDist,
   discoverBundledPluginRuntimeDeps,
   pruneBundledPluginSourceNodeModules,
+  restoreLegacyUpdaterCompatSidecars,
   runBundledPluginPostinstall,
 } from "../../scripts/postinstall-bundled-plugins.mjs";
 import { writePackageDistInventory } from "../../src/infra/package-dist-inventory.ts";
@@ -212,6 +213,105 @@ describe("bundled plugin postinstall", () => {
 
     await expect(fs.stat(currentFile)).resolves.toBeTruthy();
     await expect(fs.stat(staleFile)).rejects.toMatchObject({ code: "ENOENT" });
+  });
+
+  it("restores only postinstall-generated QA lab compat sidecar after pruning old installs", async () => {
+    const packageRoot = await createTempDirAsync("openclaw-packaged-install-qa-compat-");
+    const currentFile = path.join(packageRoot, "dist", "entry.js");
+    const stalePackage = path.join(packageRoot, "dist", "extensions", "qa-lab", "package.json");
+    const staleManifest = path.join(
+      packageRoot,
+      "dist",
+      "extensions",
+      "qa-lab",
+      "openclaw.plugin.json",
+    );
+    await fs.mkdir(path.dirname(stalePackage), { recursive: true });
+    await fs.writeFile(currentFile, "export {};\n");
+    await writePackageDistInventory(packageRoot);
+    await fs.writeFile(stalePackage, "{}\n");
+    await fs.writeFile(staleManifest, "{}\n");
+
+    runBundledPluginPostinstall({
+      packageRoot,
+      spawnSync: vi.fn(),
+      log: { log: vi.fn(), warn: vi.fn() },
+    });
+
+    await expect(fs.stat(stalePackage)).rejects.toMatchObject({ code: "ENOENT" });
+    await expect(fs.stat(staleManifest)).rejects.toMatchObject({ code: "ENOENT" });
+    await expect(
+      fs.readFile(path.join(packageRoot, "dist", "extensions", "qa-lab", "runtime-api.js"), "utf8"),
+    ).resolves.toContain("QA Lab is not packaged");
+  });
+
+  it("creates only an empty QA lab compat sidecar for fresh installs", async () => {
+    const packageRoot = await createTempDirAsync("openclaw-packaged-install-no-qa-compat-");
+    await fs.mkdir(path.join(packageRoot, "dist"), { recursive: true });
+    await fs.writeFile(path.join(packageRoot, "dist", "entry.js"), "export {};\n");
+    await writePackageDistInventory(packageRoot);
+
+    expect(
+      restoreLegacyUpdaterCompatSidecars({
+        packageRoot,
+        removedFiles: ["dist/entry-old.js"],
+        log: { log: vi.fn(), warn: vi.fn() },
+      }),
+    ).toEqual(["dist/extensions/qa-lab/runtime-api.js"]);
+
+    await expect(
+      fs.readFile(path.join(packageRoot, "dist", "extensions", "qa-lab", "runtime-api.js"), "utf8"),
+    ).resolves.toBe(
+      "// Compatibility stub for older OpenClaw updaters. QA Lab is not packaged.\nexport {};\n",
+    );
+    await expect(
+      fs.stat(path.join(packageRoot, "dist", "extensions", "qa-lab", "package.json")),
+    ).rejects.toMatchObject({ code: "ENOENT" });
+    await expect(
+      fs.stat(path.join(packageRoot, "dist", "extensions", "qa-lab", "openclaw.plugin.json")),
+    ).rejects.toMatchObject({ code: "ENOENT" });
+  });
+
+  it("keeps packaged postinstall non-fatal when the dist inventory is missing", async () => {
+    const packageRoot = await createTempDirAsync("openclaw-packaged-install-missing-inventory-");
+    const staleFile = path.join(packageRoot, "dist", "channel-CJUAgRQR.js");
+    await fs.mkdir(path.dirname(staleFile), { recursive: true });
+    await fs.writeFile(staleFile, "export {};\n");
+    const warn = vi.fn();
+
+    expect(() =>
+      runBundledPluginPostinstall({
+        packageRoot,
+        log: { log: vi.fn(), warn },
+      }),
+    ).not.toThrow();
+
+    await expect(fs.stat(staleFile)).resolves.toBeTruthy();
+    expect(warn).toHaveBeenCalledWith(
+      "[postinstall] skipping dist prune: missing dist inventory: dist/postinstall-inventory.json",
+    );
+  });
+
+  it("keeps packaged postinstall non-fatal when the dist inventory is invalid", async () => {
+    const packageRoot = await createTempDirAsync("openclaw-packaged-install-invalid-inventory-");
+    const currentFile = path.join(packageRoot, "dist", "channel-BOa4MfoC.js");
+    const inventoryPath = path.join(packageRoot, "dist", "postinstall-inventory.json");
+    await fs.mkdir(path.dirname(currentFile), { recursive: true });
+    await fs.writeFile(currentFile, "export {};\n");
+    await fs.writeFile(inventoryPath, "{not-json}\n");
+    const warn = vi.fn();
+
+    expect(() =>
+      runBundledPluginPostinstall({
+        packageRoot,
+        log: { log: vi.fn(), warn },
+      }),
+    ).not.toThrow();
+
+    await expect(fs.stat(currentFile)).resolves.toBeTruthy();
+    expect(warn).toHaveBeenCalledWith(
+      "[postinstall] skipping dist prune: invalid dist inventory: dist/postinstall-inventory.json",
+    );
   });
 
   it("rejects symlinked dist roots in packaged installs", () => {
